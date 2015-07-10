@@ -1,0 +1,51 @@
+--------------------------------------------------------
+--------寄存器地址--------------------------------------
+#define CLOCK_ADDRESS 0x68
+
+//#define DS3231_WriteAddress 0xD0    //器件写地址 
+//#define DS3231_ReadAddress  0xD1    //器件读地址
+
+#define DS3231_SECOND       0x00    //秒
+#define DS3231_MINUTE       0x01    //分
+#define DS3231_HOUR         0x02    //时
+#define DS3231_WEEK         0x03    //星期
+#define DS3231_DAY          0x04    //日
+#define DS3231_MONTH        0x05    //月
+#define DS3231_YEAR         0x06    //年
+#define DS3231_CONTROL      0x0e    //控制寄存器
+#define DS3231_STATUS       0x0f    //状态寄存器
+#define DS3231_XTAL         0x10    //晶体老化寄存器
+#define DS3231_TEMPERATUREH 0x11    //温度寄存器高字节(8位)
+#define DS3231_TEMPERATUREL 0x12    //温度寄存器低字节(高2位)
+
+#define BSY                 2       //忙
+#define OSF                 7       //振荡器停止标志
+
+--------------------------------------------------------
+--------GET/SET 1个单元---------------------------------
+regdata = wiringPiI2CReadReg8(fd,regaddr)
+BCD2HEX
+
+wiringPiI2CWriteReg8(fd,regaddr,data)
+HEX2BCD
+
+-------------------------------------------------------- 
+--------setup初始化Linux系统中I2C总线上的Ds3231---------
+fd = wiringPiI2CSetup (i2cAddress)
+
+--------------------------------------------------------
+--------数据转换----------------------------------------
+static int bcdToD (unsigned int byte, unsigned int mask)
+{
+  unsigned int b1, b2 ;
+  byte &= mask ;
+  b1 = byte & 0x0F ;
+  b2 = ((byte >> 4) & 0x0F) * 10 ;
+  return b1 + b2 ;
+}
+
+static unsigned int dToBcd (unsigned int byte)
+{
+  return ((byte / 10) << 4) + (byte % 10) ;
+}
+ 
